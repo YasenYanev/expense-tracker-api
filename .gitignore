@@ -1,0 +1,27 @@
+# Build artifacts
+bin/
+obj/
+
+# User settings
+*.user
+*.suo
+.vscode/
+
+# EF Core
+Migrations/*Snapshot.cs
+
+# SQL Server
+*.mdf
+*.ldf
+*.dbmdl
+
+# Logs and temp
+*.log
+*.tmp
+
+# Secrets and config
+.env*
+secrets.json
+
+# Publish output
+publish/
