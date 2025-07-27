@@ -13,10 +13,10 @@ builder.Services.AddDbContext<ExpensesDbContext>(options =>
 
 var app = builder.Build();
 
-app.MapGet("/", (ExpensesDbContext dbContext) =>
+app.MapGet("/", async (ExpensesDbContext dbContext) =>
 {
-    dbContext.Database.EnsureCreated();
-    return Results.Json(dbContext.ExpensesCategories.ToList());
+    var dbTest = await dbContext.ExpensesCategories.ToListAsync();
+    return Results.Json(dbTest);
 });
 
 app.Run();
