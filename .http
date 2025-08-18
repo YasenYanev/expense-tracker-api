@@ -1,1 +1,8 @@
-GET http://localhost:5226/
+
+POST http://localhost:5226/login
+Content-Type: application/json
+
+{
+  "username": "Yasen",
+  "role": "Admin"
+}
