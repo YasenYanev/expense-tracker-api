@@ -7,12 +7,12 @@ public class ExpensesDbContext : DbContext
 {
     public ExpensesDbContext(DbContextOptions<ExpensesDbContext> options) : base(options) { }
 
-    public DbSet<Expense> Expenses { get; set; }
-    public DbSet<ExpenseCategory> ExpensesCategories { get; set; }
+    public DbSet<Expenses> Expenses { get; set; }
+    public DbSet<ExpenseCategories> ExpensesCategories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ExpenseCategory>().HasData(
+        modelBuilder.Entity<ExpenseCategories>().HasData(
             new { Id = 1, ExpenseCategoryName = "Groceries" },
             new { Id = 2, ExpenseCategoryName = "Leisure" },
             new { Id = 3, ExpenseCategoryName = "Electronics" },
