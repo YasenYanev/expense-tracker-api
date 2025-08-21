@@ -21,13 +21,13 @@ public static class EndpointExtensions
 
         app.MapPost("/login", (IJWTServiceTest jwtServiceTest4e, HttpContext context, UserDto user) =>
         {
-            var username = user.Username;
-            var role = user.Role;
+            // var username = user.Username;
+            // var role = user.Role;
 
-            if (!(username == "Yasen" && role == "Admin")) return Results.Unauthorized();
+            // if (!(username == "Yasen" && role == "Admin")) return Results.Unauthorized();
 
-            context.Response.Headers["Authorization"] = jwtServiceTest4e.GenerateToken(username, role);
-            return Results.Ok("Jwt Token Created!");
+            // context.Response.Headers["Authorization"] = jwtServiceTest4e.GenerateToken(username, role);
+            // return Results.Ok("Jwt Token Created!");
         });
     }
 }
