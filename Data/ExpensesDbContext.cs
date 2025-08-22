@@ -9,11 +9,9 @@ public class ExpensesDbContext : DbContext
 
     public DbSet<Expenses> Expenses { get; set; }
     public DbSet<ExpenseCategories> ExpensesCategories { get; set; }
-    public DbSet<Users> Users { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ExpenseCategories>().HasData(
+        modelBuilder.Entity<ExpenseCategory>().HasData(
             new { Id = 1, ExpenseCategoryName = "Groceries" },
             new { Id = 2, ExpenseCategoryName = "Leisure" },
             new { Id = 3, ExpenseCategoryName = "Electronics" },

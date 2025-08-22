@@ -1,6 +1,6 @@
 namespace expense_tracker_api.Entities;
 
-public class Users
+public class User
 {
     public int Id { get; set; }
     public string UserName { get; set; }
