@@ -7,8 +7,9 @@ public class ExpensesDbContext : DbContext
 {
     public ExpensesDbContext(DbContextOptions<ExpensesDbContext> options) : base(options) { }
 
-    public DbSet<Expenses> Expenses { get; set; }
-    public DbSet<ExpenseCategories> ExpensesCategories { get; set; }
+    public DbSet<Expense> Expenses { get; set; }
+    public DbSet<ExpenseCategory> ExpensesCategories { get; set; }
+    public DbSet<User> Users { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ExpenseCategory>().HasData(

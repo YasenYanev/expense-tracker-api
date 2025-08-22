@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using expense_tracker_api.Services.Interfaces;
 using expense_tracker_api.Services.Implementations;
 using expense_tracker_api.Data;
+using expense_tracker_api.Entities;
+using Microsoft.AspNetCore.Identity;
 
 public static class ServiceCollectionExtensions
 {
@@ -14,7 +16,7 @@ public static class ServiceCollectionExtensions
             options.UseSqlServer(connectionString);
         });
 
-        services.AddSingleton<IJWTServiceTest>(new JWTServiceTest(secretKey));
+        services.AddSingleton<IJWTService>(new JWTService(secretKey));
 
         services.AddAuthentication()
         .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, jwtOptions =>
@@ -23,5 +25,7 @@ public static class ServiceCollectionExtensions
             jwtOptions.Audience = "http://localhost:5226/";
             jwtOptions.RequireHttpsMetadata = false;
         });
+
+        services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
     }
 }

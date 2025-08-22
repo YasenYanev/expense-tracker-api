@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using expense_tracker_api.Data;
 
@@ -11,9 +12,11 @@ using expense_tracker_api.Data;
 namespace expense_tracker_api.Data.Migrations
 {
     [DbContext(typeof(ExpensesDbContext))]
-    partial class ExpensesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250822094739_AddUsersTable")]
+    partial class AddUsersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +39,7 @@ namespace expense_tracker_api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExpensesCategories", (string)null);
+                    b.ToTable("ExpensesCategories");
 
                     b.HasData(
                         new
@@ -101,7 +104,7 @@ namespace expense_tracker_api.Data.Migrations
 
                     b.HasIndex("ExpenseCategoryId");
 
-                    b.ToTable("Expenses", (string)null);
+                    b.ToTable("Expenses");
                 });
 
             modelBuilder.Entity("expense_tracker_api.Entities.Users", b =>
@@ -122,7 +125,7 @@ namespace expense_tracker_api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("expense_tracker_api.Entities.Expenses", b =>
