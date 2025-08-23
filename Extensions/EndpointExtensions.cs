@@ -26,10 +26,11 @@ public static class EndpointExtensions
             HttpContext context,
             ExpensesDbContext dbContext) =>
         {
-            var newUser = new User();
-            // Hash password
-            newUser.UserName = user.UserName;
-            newUser.HashedPassword = passwordHasher.HashPassword(newUser, user.Password);
+            var newUser = new User()
+            {
+                UserName = user.UserName,
+                HashedPassword = passwordHasher.HashPassword(null, user.Password)
+            };
             // Add to database
             dbContext.Users.Add(newUser);
             await dbContext.SaveChangesAsync();
@@ -39,15 +40,22 @@ public static class EndpointExtensions
             return Results.Ok();
         });
 
-        authGroup.MapPost("/login", (IJWTService myJwtService, HttpContext context) =>
+        authGroup.MapPost("/login",
+            async ([FromBody] UserDto user,
+            IJWTService myJwtService,
+            IPasswordHasher<User> passwordHasher,
+            HttpContext context,
+            ExpensesDbContext dbContext) =>
         {
-            // var username = user.Username;
-            // var role = user.Role;
+            User? myUser = await dbContext.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
+            if (myUser == null) return Results.NotFound();
 
-            // if (!(username == "Yasen" && role == "Admin")) return Results.Unauthorized();
+            var passwordIsCorrect = passwordHasher.VerifyHashedPassword(null, myUser.HashedPassword, user.Password);
+            if (passwordIsCorrect != PasswordVerificationResult.Success) return Results.NotFound();
 
-            // context.Response.Headers["Authorization"] = jwtServiceTest4e.GenerateToken(username, role);
-            // return Results.Ok("Jwt Token Created!");
+            context.Response.Headers["Authorization"] = myJwtService.GenerateToken(myUser.UserName, myUser.Id);
+
+            return Results.Ok();
         });
     }
 }

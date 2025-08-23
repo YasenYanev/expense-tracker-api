@@ -8,5 +8,8 @@ var secretKey = builder.Configuration["Jwt:Key"];
 builder.Services.AddServices(connectionString!, secretKey!);
 
 var app = builder.Build();
+
+app.UseAuthentication();
+
 app.MapEndpoints();
 app.Run();
