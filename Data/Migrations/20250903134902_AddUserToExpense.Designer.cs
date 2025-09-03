@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using expense_tracker_api.Data;
 
@@ -11,9 +12,11 @@ using expense_tracker_api.Data;
 namespace expense_tracker_api.Data.Migrations
 {
     [DbContext(typeof(ExpensesDbContext))]
-    partial class ExpensesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250903134902_AddUserToExpense")]
+    partial class AddUserToExpense
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
