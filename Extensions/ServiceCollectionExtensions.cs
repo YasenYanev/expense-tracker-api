@@ -35,6 +35,8 @@ public static class ServiceCollectionExtensions
                     System.Text.Encoding.UTF8.GetBytes(secretKey))
             };
         });
+        
+        services.AddAuthorization();
 
         services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
     }

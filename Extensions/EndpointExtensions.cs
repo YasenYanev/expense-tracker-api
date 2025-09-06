@@ -1,17 +1,21 @@
 namespace expense_tracker_api.Extensions;
+
 using Microsoft.EntityFrameworkCore;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using expense_tracker_api.Data;
 using expense_tracker_api.Services.Interfaces;
 using expense_tracker_api.Entities;
 using expense_tracker_api.Dtos;
+using System.IdentityModel.Tokens.Jwt;
 
 public static class EndpointExtensions
 {
     public static void MapEndpoints(this WebApplication app)
     {
-        var authGroup = app.MapGroup("/users");
+        var authGroup = app.MapGroup("/auth");
+        var expensesGroup = app.MapGroup("/expenses");
 
         app.MapGet("/", async (ExpensesDbContext dbContext) =>
         {
@@ -57,5 +61,36 @@ public static class EndpointExtensions
 
             return Results.Ok();
         });
+
+        // TODO: Endpoints for user with authorization to:
+        // Get expenses
+        expensesGroup.MapGet("/", async (HttpContext context, ExpensesDbContext dbContext) =>
+        {
+            var user = context.User;
+            var userId = user.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+            try
+            {
+                // Get only expenses from the current user
+                var expenses = await dbContext.Expenses
+                .Include(e => e.ExpenseCategory)
+                .Where((expense) => expense.Id.ToString() == userId)
+                .ToListAsync();
+
+                return Results.Ok(expenses);
+            }
+            catch (InvalidOperationException exception)
+            {
+                return Results.NotFound(exception.Message);
+            }
+        }).RequireAuthorization();
+        // Remove expenses
+
+        // Add expenses
+
+        // Update expenses
+
+
+        // Filter expenses on client side
     }
 }
