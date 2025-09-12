@@ -45,7 +45,8 @@ public static class EndpointExtensions
         });
 
         authGroup.MapPost("/login",
-            async ([FromBody] UserDto user,
+            async (
+            [FromBody] UserDto user,
             IJWTService myJwtService,
             IPasswordHasher<User> passwordHasher,
             HttpContext context,
@@ -63,8 +64,46 @@ public static class EndpointExtensions
         });
 
         // TODO: Endpoints for user with authorization to:
-        // Get expenses
-        expensesGroup.MapGet("/", async (HttpContext context, ExpensesDbContext dbContext) =>
+
+        // Add expenses
+        expensesGroup.MapPost("/add",
+        async (
+            ExpenseDto expense,
+            HttpContext context,
+            ExpensesDbContext dbContext) =>
+        {
+            var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Results.Problem("Invalid or missing user ID in token");
+            }
+
+            var newExpense = new Expense()
+            {
+                ExpenseName = expense.ExpenseName,
+                Price = expense.Price,
+                ExpenseCategoryId = expense.ExpenseCategoryId,
+                UserId = int.Parse(userId),
+                Date = DateOnly.FromDateTime(DateTime.Now)
+            };
+
+            try
+            {
+                dbContext.Expenses.Add(newExpense);
+                await dbContext.SaveChangesAsync();
+                return Results.Created();
+            }
+            catch (InvalidOperationException exception)
+            {
+                return Results.NotFound(exception.Message);
+            }
+
+        }).RequireAuthorization();
+
+        // Remove expenses
+
+        // Get all expenses
+        expensesGroup.MapGet("/all", async (HttpContext context, ExpensesDbContext dbContext) =>
         {
             var user = context.User;
             var userId = user.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
@@ -74,7 +113,7 @@ public static class EndpointExtensions
                 // Get only expenses from the current user
                 var expenses = await dbContext.Expenses
                 .Include(e => e.ExpenseCategory)
-                .Where((expense) => expense.Id.ToString() == userId)
+                .Where((expense) => expense.Id.ToString() == userId) // doesnt extract right expense
                 .ToListAsync();
 
                 return Results.Ok(expenses);
@@ -84,9 +123,6 @@ public static class EndpointExtensions
                 return Results.NotFound(exception.Message);
             }
         }).RequireAuthorization();
-        // Remove expenses
-
-        // Add expenses
 
         // Update expenses
 
