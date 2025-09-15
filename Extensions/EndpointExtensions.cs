@@ -9,6 +9,7 @@ using expense_tracker_api.Services.Interfaces;
 using expense_tracker_api.Entities;
 using expense_tracker_api.Dtos;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 public static class EndpointExtensions
 {
@@ -106,14 +107,14 @@ public static class EndpointExtensions
         expensesGroup.MapGet("/all", async (HttpContext context, ExpensesDbContext dbContext) =>
         {
             var user = context.User;
-            var userId = user.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             try
             {
                 // Get only expenses from the current user
                 var expenses = await dbContext.Expenses
                 .Include(e => e.ExpenseCategory)
-                .Where((expense) => expense.Id.ToString() == userId) // doesnt extract right expense
+                .Where((expense) => expense.UserId.ToString() == userId)
                 .ToListAsync();
 
                 return Results.Ok(expenses);
