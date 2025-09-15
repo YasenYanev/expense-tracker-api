@@ -103,6 +103,29 @@ public static class EndpointExtensions
 
         // Remove expenses
 
+        expensesGroup.MapDelete("/{id}", async (
+            int id,
+            HttpContext context,
+            ExpensesDbContext dbContext) =>
+        {
+            var user = context.User;
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                var expenseToDelete = await dbContext.Expenses.FindAsync(id);
+                if (user == null) return Results.NotFound();
+
+                dbContext.Expenses.Remove(expenseToDelete);
+                await dbContext.SaveChangesAsync();
+                return Results.NoContent();
+            }
+            catch (InvalidOperationException exception)
+            {
+                return Results.NotFound(exception.Message);
+            }
+        }).RequireAuthorization();
+
         // Get all expenses
         expensesGroup.MapGet("/all", async (HttpContext context, ExpensesDbContext dbContext) =>
         {
@@ -114,7 +137,7 @@ public static class EndpointExtensions
                 // Get only expenses from the current user
                 var expenses = await dbContext.Expenses
                 .Include(e => e.ExpenseCategory)
-                .Where((expense) => expense.UserId.ToString() == userId)
+                .Where(e => e.UserId.ToString() == userId)
                 .ToListAsync();
 
                 return Results.Ok(expenses);
@@ -127,7 +150,10 @@ public static class EndpointExtensions
 
         // Update expenses
 
+        expensesGroup.MapPut("/{id}", () =>
+        {
+            
+        });
 
-        // Filter expenses on client side
     }
 }
