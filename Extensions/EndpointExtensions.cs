@@ -134,7 +134,6 @@ public static class EndpointExtensions
 
             try
             {
-                // Get only expenses from the current user
                 var expenses = await dbContext.Expenses
                 .Include(e => e.ExpenseCategory)
                 .Where(e => e.UserId.ToString() == userId)
@@ -150,10 +149,34 @@ public static class EndpointExtensions
 
         // Update expenses
 
-        expensesGroup.MapPut("/{id}", () =>
+        expensesGroup.MapPut("/{id}", async (
+            int id,
+            [FromBody] ExpenseDto updatedExpense, 
+            HttpContext context,
+            ExpensesDbContext dbContext) =>
         {
-            
-        });
+            var user = context.User;
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                var expenseToUpdate = await dbContext.Expenses
+                .Where(e => e.UserId.ToString() == userId)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(u => u.ExpenseName, updatedExpense.ExpenseName)
+                    .SetProperty(u => u.Price, updatedExpense.Price)
+                    .SetProperty(u => u.ExpenseCategoryId, updatedExpense.ExpenseCategoryId));
+
+                if (expenseToUpdate == 0) throw new Exception($"No expense with id:{id} found.");
+
+                return Results.NoContent();
+            }
+            catch (Exception exception)
+            {
+                return Results.NotFound(exception.Message);
+            }
+
+        }).RequireAuthorization();
 
     }
 }
